@@ -43,6 +43,8 @@ public class ObtainFernFlowerTask extends CachedTask
         final ZipInputStream zin = new ZipInputStream(connect.getInputStream());
         ZipEntry entry = null;
 
+        System.out.println("ABAHHHH");
+
         while ((entry = zin.getNextEntry()) != null)
         {
             System.out.println(entry.getName());

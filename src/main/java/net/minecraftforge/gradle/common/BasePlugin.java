@@ -213,7 +213,12 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
         {
             mcpTask.setMcpUrl(delayedString(Constants.MCP_URL));
             mcpTask.setFfJar(delayedFile(Constants.FERNFLOWER));
-            mcpTask.setDoesCache(false);
+            mcpTask.getOutputs().upToDateWhen(new Closure<Boolean>(this, null)  {
+                public Boolean call(Object... obj)
+                {
+                    return false;
+                }
+            });
         }
 
         DownloadWithClosureTask getAssetsIndex = makeTask("getAssetsIndex", DownloadWithClosureTask.class);
