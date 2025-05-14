@@ -120,6 +120,8 @@ public class ProcessJarTask extends CachedTask
     {
         getLogger().debug("INPUT: " + inJar);
         getLogger().debug("OUTPUT: " + outJar);
+        getLogger().info("INPUT: " + inJar);
+        getLogger().info("OUTPUT: " + outJar);
         // load mapping
         JarMapping mapping = new JarMapping();
         mapping.loadMappings(srg);
