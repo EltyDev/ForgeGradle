@@ -45,6 +45,9 @@ public class ObtainFernFlowerTask extends CachedTask
 
         while ((entry = zin.getNextEntry()) != null)
         {
+            System.out.println(entry.getName());
+            System.out.println(StringUtils.lower(entry.getName()).endsWith("fernflower.jar"));
+
             if (StringUtils.lower(entry.getName()).endsWith("fernflower.jar"))
             {
                 ff.getParentFile().mkdirs();
