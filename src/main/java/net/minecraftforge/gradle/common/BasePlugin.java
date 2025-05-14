@@ -344,10 +344,10 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
         return assetIndex;
     }
 
-    public String getVersionJsonUrl()
-    {
-        return versionJsonUrl;
-    }
+        public String getVersionJsonUrl()
+        {
+            return versionJsonUrl;
+        }
 
     public String getAssetIndexUrl()
     {

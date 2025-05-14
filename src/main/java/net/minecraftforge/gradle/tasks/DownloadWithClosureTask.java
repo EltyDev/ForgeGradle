@@ -3,6 +3,7 @@ package net.minecraftforge.gradle.tasks;
 import groovy.lang.Closure;
 import net.minecraftforge.gradle.delayed.DelayedFile;
 import net.minecraftforge.gradle.tasks.abstractutil.CachedTask;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
@@ -11,13 +12,12 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class DownloadWithClosureTask extends CachedTask {
+public class DownloadWithClosureTask extends DefaultTask {
 
     @Input
     private Closure<String> url;
 
     @OutputFile
-    @Cached
     private DelayedFile output;
 
     @TaskAction
