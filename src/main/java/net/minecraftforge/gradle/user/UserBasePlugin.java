@@ -298,8 +298,8 @@ public abstract class UserBasePlugin extends BasePlugin<UserExtension>
         SourceSet api = javaConv.getSourceSets().create("api");
 
         // set the Source
-        javaConv.setSourceCompatibility("1.6");
-        javaConv.setTargetCompatibility("1.6");
+        javaConv.setSourceCompatibility("1.8");
+        javaConv.setTargetCompatibility("1.8");
 
         // add to SourceSet compile paths
         api.setCompileClasspath(api.getCompileClasspath().plus(config));

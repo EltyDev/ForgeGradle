@@ -7,8 +7,8 @@ apply plugin: 'maven-publish'
 group = 'net.minecraftforge.gradle'
 version = '1.0-SNAPSHOT'
 archivesBaseName = 'ForgeGradle'
-targetCompatibility = '1.6'
-sourceCompatibility = '1.6'
+targetCompatibility = '1.8'
+sourceCompatibility = '1.8'
 
 repositories {
     maven {

@@ -474,7 +474,6 @@ public final class ContextualPatch
         int hunkIdx = -1;
         for (String hunkLine : hunk.lines)
         {
-            System.out.println(hunkLine);
             hunkIdx++;
             boolean isAddition = isAdditionLine(hunkLine);
             if (!isAddition)
