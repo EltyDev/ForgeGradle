@@ -216,7 +216,6 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
         {
             getAssetsIndex.setUrl(getAssetIndexUrlClosure());
             getAssetsIndex.setOutput(delayedFile(Constants.ASSETS + "/indexes/{ASSET_INDEX}.json"));
-            getAssetsIndex.setDoesCache(false);
             getAssetsIndex.dependsOn("downloadVersionJson");
 
             getAssetsIndex.doLast(new Action<Task>() {
