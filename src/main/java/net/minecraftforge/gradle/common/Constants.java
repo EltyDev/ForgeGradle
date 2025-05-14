@@ -72,8 +72,8 @@ public class Constants
     public static final String ASSETS_INDEX     =  "legacy";
 
     // things in the cache dir.
-    public static final String VERSIONS_MANIF   = "{CACHE_DIR}/versions.json";
-    public static final String VERSION_JSON     = "{CACHE_DIR}/{MC_VERSION}.json";
+    public static final String VERSIONS_MANIF   = "{CACHE_DIR}/minecraft/versions.json";
+    public static final String VERSION_JSON     = "{CACHE_DIR}/minecraft/{MC_VERSION}.json";
     public static final String JAR_CLIENT_FRESH = "{CACHE_DIR}/minecraft/net/minecraft/minecraft/{MC_VERSION}/minecraft-{MC_VERSION}.jar";
     public static final String JAR_SERVER_FRESH = "{CACHE_DIR}/minecraft/net/minecraft/minecraft_server/{MC_VERSION}/minecraft_server-{MC_VERSION}.jar";
     public static final String JAR_MERGED       = "{CACHE_DIR}/minecraft/net/minecraft/minecraft_merged/{MC_VERSION}/minecraft_merged-{MC_VERSION}.jar";
