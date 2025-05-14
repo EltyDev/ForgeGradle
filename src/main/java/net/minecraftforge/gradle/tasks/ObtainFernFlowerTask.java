@@ -1,7 +1,6 @@
 package net.minecraftforge.gradle.tasks;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -40,8 +39,12 @@ public class ObtainFernFlowerTask extends CachedTask
         HttpURLConnection connect = (HttpURLConnection) (new URL(url)).openConnection();
         connect.setInstanceFollowRedirects(true);
 
+        InputStream inStream = connect.getInputStream();
+        OutputStream outStream = new FileOutputStream(ff);
         final ZipInputStream zin = new ZipInputStream(connect.getInputStream());
         ZipEntry entry = null;
+
+
 
         System.out.println("ABAHHHH");
 
