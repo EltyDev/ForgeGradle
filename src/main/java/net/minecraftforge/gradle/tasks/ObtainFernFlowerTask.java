@@ -35,12 +35,22 @@ public class ObtainFernFlowerTask extends CachedTask
 
         getLogger().info("Downloading " + url);
         getLogger().info("Fernflower output location " + ff);
+        System.out.println("Fernflower output location " + ff);
+        System.out.println("MCP URL " + url);
 
         HttpURLConnection connect = (HttpURLConnection) (new URL(url)).openConnection();
         connect.setInstanceFollowRedirects(true);
 
         InputStream inStream = connect.getInputStream();
         OutputStream outStream = new FileOutputStream(ff);
+        int data = inStream.read();
+        while (data != -1)
+        {
+            outStream.write(data);
+
+            // read next
+            data = inStream.read();
+        }
         final ZipInputStream zin = new ZipInputStream(connect.getInputStream());
         ZipEntry entry = null;
 
