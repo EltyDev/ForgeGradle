@@ -17,6 +17,7 @@ import net.minecraftforge.gradle.delayed.DelayedFile;
 import net.minecraftforge.gradle.delayed.DelayedFileTree;
 import net.minecraftforge.gradle.delayed.DelayedString;
 import net.minecraftforge.gradle.tasks.DownloadAssetsTask;
+import net.minecraftforge.gradle.tasks.DownloadWithClosureTask;
 import net.minecraftforge.gradle.tasks.ObtainFernFlowerTask;
 import net.minecraftforge.gradle.tasks.abstractutil.DownloadTask;
 
@@ -134,14 +135,12 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
     private void makeObtainTasks()
     {
 
-        DownloadTask task;
-
-        task = makeTask("downloadVersionManifest", DownloadTask.class);
+        DownloadTask versionManifestTask = makeTask("downloadVersionManifest", DownloadTask.class);
         {
-            task.setOutput(delayedFile(Constants.VERSIONS_MANIF));
-            task.setUrl(delayedString(Constants.MC_VERSIONS_URL));
+            versionManifestTask.setOutput(delayedFile(Constants.VERSIONS_MANIF));
+            versionManifestTask.setUrl(delayedString(Constants.MC_VERSIONS_URL));
 
-            task.doLast(new Action<Task>() {
+            versionManifestTask.doLast(new Action<Task>() {
                 public void execute(Task task)
                 {
                     try
@@ -155,7 +154,7 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
                 }
             });
 
-            task.getOutputs().upToDateWhen(new Closure<Boolean>(this, null)  {
+            versionManifestTask.getOutputs().upToDateWhen(new Closure<Boolean>(this, null)  {
                 public Boolean call(Object... obj)
                 {
                     return false;
@@ -163,10 +162,12 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
             });
         }
 
-        task = makeTask("downloadVersionJson", DownloadTask.class);
+        DownloadWithClosureTask task;
+
+        task = makeTask("downloadVersionJson", DownloadWithClosureTask.class);
         {
             task.setOutput(delayedFile(Constants.VERSION_JSON));
-            task.setUrl(delayedString(getVersionJsonUrlClosure().call()));
+            task.setUrl(getVersionJsonUrlClosure());
             task.dependsOn("downloadVersionManifest");
 
             task.doLast(new Action<Task>() {
@@ -191,17 +192,17 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
             });
         }
 
-        task = makeTask("downloadClient", DownloadTask.class);
+        task = makeTask("downloadClient", DownloadWithClosureTask.class);
         {
             task.setOutput(delayedFile(Constants.JAR_CLIENT_FRESH));
-            task.setUrl(delayedString(getClientUrlClosure().call()));
+            task.setUrl(getClientUrlClosure());
             task.dependsOn("downloadVersionJson");
         }
 
-        task = makeTask("downloadServer", DownloadTask.class);
+        task = makeTask("downloadServer", DownloadWithClosureTask.class);
         {
             task.setOutput(delayedFile(Constants.JAR_SERVER_FRESH));
-            task.setUrl(delayedString(getServerUrlClosure().call()));
+            task.setUrl(getServerUrlClosure());
             task.dependsOn("downloadVersionJson");
         }
 
@@ -211,9 +212,9 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
             mcpTask.setFfJar(delayedFile(Constants.FERNFLOWER));
         }
 
-        DownloadTask getAssetsIndex = makeTask("getAssetsIndex", DownloadTask.class);
+        DownloadWithClosureTask getAssetsIndex = makeTask("getAssetsIndex", DownloadWithClosureTask.class);
         {
-            getAssetsIndex.setUrl(delayedString(getAssetIndexUrlClosure().call()));
+            getAssetsIndex.setUrl(getAssetIndexUrlClosure());
             getAssetsIndex.setOutput(delayedFile(Constants.ASSETS + "/indexes/{ASSET_INDEX}.json"));
             getAssetsIndex.setDoesCache(false);
             getAssetsIndex.dependsOn("downloadVersionJson");
