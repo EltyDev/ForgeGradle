@@ -34,6 +34,8 @@ import com.google.common.base.Throwables;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
+import static net.minecraftforge.gradle.common.Constants.EXT_NAME_MC;
+
 public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Project>, IDelayedResolver<K>
 {
     public Project         project;
@@ -139,7 +141,7 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
         {
             versionManifestTask.setOutput(delayedFile(Constants.VERSIONS_MANIF));
             versionManifestTask.setUrl(delayedString(Constants.MC_VERSIONS_URL));
-
+            versionManifestTask.setDoesCache(false);
             versionManifestTask.doLast(new Action<Task>() {
                 public void execute(Task task)
                 {
@@ -168,6 +170,7 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
         {
             task.setOutput(delayedFile(Constants.VERSION_JSON));
             task.setUrl(getVersionJsonUrlClosure());
+            task.setDoesCache(false);
             task.dependsOn("downloadVersionManifest");
 
             task.doLast(new Action<Task>() {
@@ -255,10 +258,10 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
     }
 
     public void obtainVersionJsonUrl(VersionManifest versionManifest) {
-        System.out.println(this.version);
+        String actualVersion = ((BaseExtension) project.getExtensions().getByName(EXT_NAME_MC)).getVersion();
         for (VersionManifest.Version version : versionManifest.versions)
         {
-            if (version.id.equals(this.version.id)) {
+            if (version.id.equals(actualVersion)) {
                 versionJsonUrl = version.url;
                 return;
             }
