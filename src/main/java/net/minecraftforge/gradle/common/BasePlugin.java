@@ -255,6 +255,7 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
     }
 
     public void obtainVersionJsonUrl(VersionManifest versionManifest) {
+        System.out.println(this.version);
         for (VersionManifest.Version version : versionManifest.versions)
         {
             if (version.id.equals(this.version.id)) {
@@ -262,6 +263,7 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
                 return;
             }
         }
+        Throwables.propagate(new Exception("Couldn't find version json url for " + this.version.id));
     }
 
     public void obtainMinecraftUrls(VersionJson versionJSON)
