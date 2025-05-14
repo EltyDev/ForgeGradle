@@ -167,6 +167,7 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
         {
             task.setOutput(delayedFile(Constants.VERSION_JSON));
             task.setUrl(delayedString(getVersionJsonUrlClosure().call()));
+            task.dependsOn("downloadVersionManifest");
 
             task.doLast(new Action<Task>() {
                 public void execute(Task task)
@@ -194,12 +195,14 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
         {
             task.setOutput(delayedFile(Constants.JAR_CLIENT_FRESH));
             task.setUrl(delayedString(getClientUrlClosure().call()));
+            task.dependsOn("downloadVersionJson");
         }
 
         task = makeTask("downloadServer", DownloadTask.class);
         {
             task.setOutput(delayedFile(Constants.JAR_SERVER_FRESH));
             task.setUrl(delayedString(getServerUrlClosure().call()));
+            task.dependsOn("downloadVersionJson");
         }
 
         ObtainFernFlowerTask mcpTask = makeTask("downloadMcpTools", ObtainFernFlowerTask.class);
@@ -213,6 +216,7 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
             getAssetsIndex.setUrl(delayedString(getAssetIndexUrlClosure().call()));
             getAssetsIndex.setOutput(delayedFile(Constants.ASSETS + "/indexes/{ASSET_INDEX}.json"));
             getAssetsIndex.setDoesCache(false);
+            getAssetsIndex.dependsOn("downloadVersionJson");
 
             getAssetsIndex.doLast(new Action<Task>() {
                 public void execute(Task task)
