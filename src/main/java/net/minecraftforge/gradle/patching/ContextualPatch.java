@@ -480,6 +480,7 @@ public final class ContextualPatch
             {
                 if (idx >= target.size())
                 {
+                    System.out.println("Too lonng for " + hunk);
                     if (dryRun)
                     {
                         return new HunkReport(PatchStatus.Failure, null, idx, fuzz, hunkID);
@@ -498,6 +499,7 @@ public final class ContextualPatch
                 {
                     if (dryRun)
                     {
+                        System.out.println("CA MATCH PAS" + hunkLine);
                         return new HunkReport(PatchStatus.Failure, null, idx, fuzz, hunkID);
                     }
                     else
@@ -529,6 +531,7 @@ public final class ContextualPatch
         }
         idx++; // indices in the target list are 0-based
         lastPatchedLine = idx;
+
         return new HunkReport((fuzz != 0 ? PatchStatus.Fuzzed : PatchStatus.Patched), null, startIdx, fuzz, hunkID);
     }
 
