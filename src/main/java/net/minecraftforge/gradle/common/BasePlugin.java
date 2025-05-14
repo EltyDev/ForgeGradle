@@ -258,7 +258,7 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
         for (VersionManifest.Version version : versionManifest.versions)
         {
             if (version.id.equals(this.version.id)) {
-                assetIndexUrl = version.url;
+                versionJsonUrl = version.url;
                 return;
             }
         }
