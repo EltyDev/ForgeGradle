@@ -135,37 +135,6 @@ public abstract class UserBasePlugin extends BasePlugin<UserExtension>
         project.getTasks().getByName("reobf").dependsOn("genSrgs");
         project.getTasks().getByName("compileJava").dependsOn("deobfBinJar");
         project.getTasks().getByName("compileApiJava").dependsOn("deobfBinJar");
-        
-        // stop people screwing stuff up.
-        project.getGradle().getTaskGraph().whenReady(new Closure<Object>(this, null) {
-            @Override
-            public Object call()
-            {
-                TaskExecutionGraph graph = project.getGradle().getTaskGraph();
-                String path = project.getPath();
-                
-                if (graph.hasTask(path + "setupDecompWorkspace"))
-                {
-                    if (!System.getProperty("java.version").startsWith("1.7"))
-                    {
-                        throw new RuntimeException("The setupDecompWorkspace will only work with Java 7! This is fixed in ForgeGradle 1.2");
-                    }
-                }
-                return null;
-            }
-            
-            @Override
-            public Object call(Object obj)
-            {
-                return call();
-            }
-            
-            @Override
-            public Object call(Object... obj)
-            {
-                return call();
-            }
-        });
     }
 
     protected Class<UserExtension> getExtensionClass()
