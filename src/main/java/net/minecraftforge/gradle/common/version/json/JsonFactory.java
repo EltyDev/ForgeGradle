@@ -13,6 +13,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
+import net.minecraftforge.gradle.common.version.VersionJson;
+import net.minecraftforge.gradle.common.version.VersionManifest;
 
 public class JsonFactory
 {
@@ -42,5 +44,21 @@ public class JsonFactory
         AssetIndex a =  GSON.fromJson(reader, AssetIndex.class);
         reader.close();
         return a;
+    }
+
+    public static VersionJson loadVersionJson(File json) throws JsonSyntaxException, JsonIOException, IOException
+    {
+        FileReader reader = new FileReader(json);
+        VersionJson v =  GSON.fromJson(reader, VersionJson.class);
+        reader.close();
+        return v;
+    }
+
+    public static VersionManifest loadVersionManifest(File json) throws JsonSyntaxException, JsonIOException, IOException
+    {
+        FileReader reader = new FileReader(json);
+        VersionManifest v =  GSON.fromJson(reader, VersionManifest.class);
+        reader.close();
+        return v;
     }
 }

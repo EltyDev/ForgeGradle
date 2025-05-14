@@ -78,7 +78,6 @@ import org.gradle.api.tasks.compile.GroovyCompile;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.scala.ScalaCompile;
-import org.gradle.listener.ActionBroadcast;
 import org.gradle.plugins.ide.eclipse.model.Classpath;
 import org.gradle.plugins.ide.eclipse.model.ClasspathEntry;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
@@ -409,7 +408,7 @@ public abstract class UserBasePlugin extends BasePlugin<UserExtension>
 
         eclipseConv.getClasspath().setDownloadJavadoc(true);
         eclipseConv.getClasspath().setDownloadSources(true);
-        ((ActionBroadcast<Classpath>) eclipseConv.getClasspath().getFile().getWhenMerged()).add(new Action<Classpath>()
+        eclipseConv.getClasspath().getFile().getWhenMerged().add(new Action<Classpath>()
         {
             @Override
             public void execute(Classpath classpath)
@@ -829,7 +828,7 @@ public abstract class UserBasePlugin extends BasePlugin<UserExtension>
 
         // link sources and javadocs eclipse
         EclipseModel eclipseConv = (EclipseModel) project.getExtensions().getByName("eclipse");
-        ((ActionBroadcast<Classpath>) eclipseConv.getClasspath().getFile().getWhenMerged()).add(new Action<Classpath>()
+        eclipseConv.getClasspath().getFile().getWhenMerged().add(new Action<Classpath>()
         {
             FileReferenceFactory factory = new FileReferenceFactory();
 
@@ -853,7 +852,7 @@ public abstract class UserBasePlugin extends BasePlugin<UserExtension>
 
         // link sources and javadocs ntellij idea
         IdeaModel ideaConv = (IdeaModel) project.getExtensions().getByName("idea");
-        ((ActionBroadcast<Module>) ideaConv.getModule().getIml().getWhenMerged()).add(new Action<Module>() {
+        ideaConv.getModule().getIml().getWhenMerged().add(new Action<Module>() {
 
             PathFactory factory = new PathFactory();
 

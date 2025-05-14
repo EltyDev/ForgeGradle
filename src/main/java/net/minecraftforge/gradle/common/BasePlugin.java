@@ -9,6 +9,8 @@ import java.util.HashMap;
 import net.minecraftforge.gradle.FileLogListenner;
 import net.minecraftforge.gradle.common.version.AssetIndex;
 import net.minecraftforge.gradle.common.version.Version;
+import net.minecraftforge.gradle.common.version.VersionJson;
+import net.minecraftforge.gradle.common.version.VersionManifest;
 import net.minecraftforge.gradle.common.version.json.JsonFactory;
 import net.minecraftforge.gradle.delayed.DelayedBase.IDelayedResolver;
 import net.minecraftforge.gradle.delayed.DelayedFile;
@@ -33,9 +35,14 @@ import com.google.gson.JsonSyntaxException;
 
 public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Project>, IDelayedResolver<K>
 {
-    public Project    project;
-    public Version    version;
-    public AssetIndex assetIndex;
+    public Project         project;
+    public Version         version;
+    public VersionJson versionJson;
+    public AssetIndex      assetIndex;
+    public String          versionJsonUrl;
+    public String          assetIndexUrl;
+    public String          clientUrl;
+    public String          serverUrl;
 
     @Override
     public final void apply(Project arg)
@@ -126,19 +133,73 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
     @SuppressWarnings("serial")
     private void makeObtainTasks()
     {
-        // download tasks
+
         DownloadTask task;
+
+        task = makeTask("downloadVersionManifest", DownloadTask.class);
+        {
+            task.setOutput(delayedFile(Constants.VERSIONS_MANIF));
+            task.setUrl(delayedString(Constants.MC_VERSIONS_URL));
+
+            task.doLast(new Action<Task>() {
+                public void execute(Task task)
+                {
+                    try
+                    {
+                        obtainVersionJsonUrl(parseVersionManifest());
+                    }
+                    catch (Exception e)
+                    {
+                        Throwables.propagate(e);
+                    }
+                }
+            });
+
+            task.getOutputs().upToDateWhen(new Closure<Boolean>(this, null)  {
+                public Boolean call(Object... obj)
+                {
+                    return false;
+                }
+            });
+        }
+
+        task = makeTask("downloadVersionJson", DownloadTask.class);
+        {
+            task.setOutput(delayedFile(Constants.VERSION_JSON));
+            task.setUrl(delayedString(getVersionJsonUrlClosure().call()));
+
+            task.doLast(new Action<Task>() {
+                public void execute(Task task)
+                {
+                    try
+                    {
+                        obtainMinecraftUrls(parseVersionJson());
+                    }
+                    catch (Exception e)
+                    {
+                        Throwables.propagate(e);
+                    }
+                }
+            });
+
+            task.getOutputs().upToDateWhen(new Closure<Boolean>(this, null)  {
+                public Boolean call(Object... obj)
+                {
+                    return false;
+                }
+            });
+        }
 
         task = makeTask("downloadClient", DownloadTask.class);
         {
             task.setOutput(delayedFile(Constants.JAR_CLIENT_FRESH));
-            task.setUrl(delayedString(Constants.MC_JAR_URL));
+            task.setUrl(delayedString(getClientUrlClosure().call()));
         }
 
         task = makeTask("downloadServer", DownloadTask.class);
         {
             task.setOutput(delayedFile(Constants.JAR_SERVER_FRESH));
-            task.setUrl(delayedString(Constants.MC_SERVER_URL));
+            task.setUrl(delayedString(getServerUrlClosure().call()));
         }
 
         ObtainFernFlowerTask mcpTask = makeTask("downloadMcpTools", ObtainFernFlowerTask.class);
@@ -146,10 +207,10 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
             mcpTask.setMcpUrl(delayedString(Constants.MCP_URL));
             mcpTask.setFfJar(delayedFile(Constants.FERNFLOWER));
         }
-        
+
         DownloadTask getAssetsIndex = makeTask("getAssetsIndex", DownloadTask.class);
         {
-            getAssetsIndex.setUrl(delayedString(Constants.ASSETS_INDEX_URL));
+            getAssetsIndex.setUrl(delayedString(getAssetIndexUrlClosure().call()));
             getAssetsIndex.setOutput(delayedFile(Constants.ASSETS + "/indexes/{ASSET_INDEX}.json"));
             getAssetsIndex.setDoesCache(false);
 
@@ -166,7 +227,7 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
                     }
                 }
             });
-            
+
             getAssetsIndex.getOutputs().upToDateWhen(new Closure<Boolean>(this, null)  {
                 public Boolean call(Object... obj)
                 {
@@ -188,6 +249,33 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
         }
     }
 
+    public void obtainVersionJsonUrl(VersionManifest versionManifest) {
+        for (VersionManifest.Version version : versionManifest.versions)
+        {
+            if (version.id.equals(this.version.id)) {
+                assetIndexUrl = version.url;
+                return;
+            }
+        }
+    }
+
+    public void obtainMinecraftUrls(VersionJson versionJSON)
+    {
+        clientUrl = versionJSON.downloads.get("client").url;
+        serverUrl = versionJSON.downloads.get("server").url;
+        assetIndexUrl = versionJSON.assetIndex.url;
+    }
+
+    public VersionManifest parseVersionManifest() throws JsonSyntaxException, JsonIOException, IOException
+    {
+        return JsonFactory.loadVersionManifest(delayedFile(Constants.VERSIONS_MANIF).call());
+    }
+
+    public VersionJson parseVersionJson() throws JsonSyntaxException, JsonIOException, IOException
+    {
+        return JsonFactory.loadVersionJson(delayedFile(Constants.VERSION_JSON).call());
+    }
+
     public void parseAssetIndex() throws JsonSyntaxException, JsonIOException, IOException
     {
         assetIndex = JsonFactory.loadAssetsIndex(delayedFile(Constants.ASSETS + "/indexes/{ASSET_INDEX}.json").call());
@@ -204,9 +292,69 @@ public abstract class BasePlugin<K extends BaseExtension> implements Plugin<Proj
         };
     }
 
+    public Closure<String> getVersionJsonUrlClosure()
+    {
+        return new Closure<String>(this, null) {
+            public String call(Object... obj)
+            {
+                return getVersionJsonUrl();
+            }
+        };
+    }
+
+    public Closure<String> getAssetIndexUrlClosure()
+    {
+        return new Closure<String>(this, null) {
+            public String call(Object... obj)
+            {
+                return getAssetIndexUrl();
+            }
+        };
+    }
+
+    public Closure<String> getClientUrlClosure()
+    {
+        return new Closure<String>(this, null) {
+            public String call(Object... obj)
+            {
+                return getClientUrl();
+            }
+        };
+    }
+
+    public Closure<String> getServerUrlClosure()
+    {
+        return new Closure<String>(this, null) {
+            public String call(Object... obj)
+            {
+                return getServerUrl();
+            }
+        };
+    }
+
     public AssetIndex getAssetIndex()
     {
         return assetIndex;
+    }
+
+    public String getVersionJsonUrl()
+    {
+        return versionJsonUrl;
+    }
+
+    public String getAssetIndexUrl()
+    {
+        return assetIndexUrl;
+    }
+
+    public String getClientUrl()
+    {
+        return clientUrl;
+    }
+
+    public String getServerUrl()
+    {
+        return serverUrl;
     }
 
     /**
