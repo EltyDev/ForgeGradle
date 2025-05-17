@@ -10,6 +10,7 @@ import net.minecraftforge.gradle.tasks.PatchJarTask;
 import net.minecraftforge.gradle.tasks.ProcessJarTask;
 import net.minecraftforge.gradle.tasks.RemapSourcesTask;
 
+import net.minecraftforge.gradle.tasks.abstractutil.DownloadTask;
 import org.gradle.api.Task;
 import org.gradle.api.tasks.bundling.Zip;
 
@@ -102,10 +103,17 @@ public class ForgeUserPlugin extends UserBasePlugin
             remap.setParamsCsv(delayedFile(PARAM_CSV));
             remap.setDoesJavadocs(true);
         }
+
+        DownloadTask downloadFixedPatches = makeTask("downloadFixedPatches", DownloadTask.class);
+        {
+            downloadFixedPatches.dependsOn("decompile");
+            downloadFixedPatches.setUrl(delayedString(FORGE_PATCHES_ZIP_URL));
+            downloadFixedPatches.setOutput(delayedFile(FORGE_PATCHES_ZIP));
+        }
         
         PatchJarTask forgePatches = makeTask("doForgePatches", PatchJarTask.class);
         {
-            forgePatches.dependsOn("remapJar");
+            forgePatches.dependsOn("remapJar", "downloadFixedPatches");
             forgePatches.setInJar(remapped);
             forgePatches.setOutJar(forged);
             forgePatches.setInPatches(delayedFile(FORGE_PATCHES_ZIP));
