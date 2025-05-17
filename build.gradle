@@ -57,6 +57,20 @@ dependencies {
 
 artifacts { archives jar }
 
+def jdk7RtJar = file("${JDK_7}/jre/lib/rt.jar")
+
+tasks.withType(JavaCompile) {
+    sourceCompatibility = '1.7'
+    targetCompatibility = '1.7'
+
+    if (jdk7RtJar.exists()) {
+        options.bootClasspath = jdk7RtJar.absolutePath
+    } else {
+        logger.warn("rt.jar not found at ${jdk7RtJar}. Compiling without bootClasspath — beware of possible Java 7 incompatibilities.")
+
+    }
+}
+
 uploadArchives {
     repositories {
         if (project.hasProperty("filesmaven")) {

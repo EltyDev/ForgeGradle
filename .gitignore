@@ -12,6 +12,7 @@ gradle-app.setting
 .classpath
 .project
 bin
+gradle.properties
 
 # intellij
 out
