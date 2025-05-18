@@ -451,7 +451,7 @@ public abstract class UserBasePlugin extends BasePlugin<UserExtension>
                 {
                     String module = task.getProject().getProjectDir().getCanonicalPath();
                     File file = project.file(".idea/workspace.xml");
-                    new File("run/").mkdirs();
+                    project.file("run/").mkdirs();
                     if (!file.exists())
                         throw new RuntimeException("Only run this task after importing a build.gradle file into intellij!");
 
@@ -608,7 +608,7 @@ public abstract class UserBasePlugin extends BasePlugin<UserExtension>
 
             sub = doc.createElement("module");
             {
-                sub.setAttribute("name", ((IdeaModel) project.getExtensions().getByName("idea")).getModule().getName());
+                sub.setAttribute("name", ((IdeaModel) project.getExtensions().getByName("idea")).getModule().getName() + ".main" );
                 child.appendChild(sub);
             }
 
@@ -712,7 +712,7 @@ public abstract class UserBasePlugin extends BasePlugin<UserExtension>
 
             sub = doc.createElement("module");
             {
-                sub.setAttribute("name", ((IdeaModel) project.getExtensions().getByName("idea")).getModule().getName());
+                sub.setAttribute("name", ((IdeaModel) project.getExtensions().getByName("idea")).getModule().getName() + ".main");
                 child.appendChild(sub);
             }
 
